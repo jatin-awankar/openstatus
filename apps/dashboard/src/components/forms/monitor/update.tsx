@@ -2,7 +2,9 @@
 
 import { deserialize } from "@openstatus/assertions";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { isTRPCClientError } from "@trpc/client";
 import { useParams, useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { FormCardGroup } from "@/components/forms/form-card";
 import { useTRPC } from "@/lib/trpc/client";
@@ -83,8 +85,11 @@ export function FormMonitorUpdate() {
         refetch();
       },
       onError: (err) => {
-        // TODO: open dialog
-        console.error(err);
+        if (isTRPCClientError(err)) {
+          toast.error(err.message);
+        } else {
+          toast.error("Failed to update monitor");
+        }
       },
     }),
   );
